@@ -1,8 +1,11 @@
-name: Build mod
+name: Build and Release mod
 
 on:
   push:
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -22,8 +25,18 @@ jobs:
       - name: Build mod
         run: gradle build --no-daemon --stacktrace
 
-      - name: Upload mod jar
+      - name: Upload mod jar artifact
         uses: actions/upload-artifact@v4
         with:
           name: botmod-fabric-26.2
           path: build/libs/*.jar
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          name: BotMod v1.0.0 (Fabric 26.2)
+          body: "Direct download of compiled Fabric mod JAR for Minecraft 26.2"
+          files: build/libs/botmod-1.0.0.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
